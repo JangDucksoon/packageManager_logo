@@ -13,23 +13,26 @@ config_dir = 'C:\\Temp'
 os.makedirs(config_dir, exist_ok=True)
 config_file = os.path.join(config_dir, 'JavaPackageCreator_config_logo.ini')
 
+
 def load_config():
     global config
-    config =configparser.ConfigParser()
+    config = configparser.ConfigParser()
     if os.path.exists(config_file):
         config.read(config_file)
         if 'PATHS' not in config or 'git_repo_path' not in config['PATHS']:
             config['PATHS'] = {'git_repo_path': ''}
             save_config(config)
     else:
-        config['PATHS'] = {'git_repo_path':''}
+        config['PATHS'] = {'git_repo_path': ''}
         with open(config_file, 'w') as configfile:
             config.write(config_file)
     return config
 
+
 def save_config(config):
     with open(config_file, 'w') as configfile:
         config.write(configfile)
+
 
 # Git 저장소 경로 선택 함수
 def select_git_repo_path():
@@ -40,13 +43,15 @@ def select_git_repo_path():
         update_git_repo_path_label()
     return git_repo_path
 
+
 def images_path(relative_path):
     try:
         base_path = os.path.join(sys._MEIPASS, 'images')
     except AttributeError:
         base_path = os.path.abspath("./images")
 
-    return os.path.join(base_path, relative_path)             
+    return os.path.join(base_path, relative_path)
+
 
 def create_package(base_path, new_package_name, clazz_name):
     base_path = os.path.abspath(base_path)
@@ -68,8 +73,10 @@ def create_package(base_path, new_package_name, clazz_name):
 
             if git_repo_path:
                 try:
-                    subprocess.run(['git', 'add', os.path.join(web_package_path, '*')], cwd=git_repo_path, shell=True, check=True)
-                    subprocess.run(['git', 'add', os.path.join(service_package_path, '*')], cwd=git_repo_path, shell=True, check=True)
+                    subprocess.run(['git', 'add', os.path.join(web_package_path, '*')], cwd=git_repo_path, shell=True,
+                                   check=True)
+                    subprocess.run(['git', 'add', os.path.join(service_package_path, '*')], cwd=git_repo_path,
+                                   shell=True, check=True)
                 except subprocess.CalledProcessError as e:
                     messagebox.showerror('git fail', 'Failed to add the file to the Git repository.')
 
@@ -78,13 +85,16 @@ def create_package(base_path, new_package_name, clazz_name):
         print(e)
         messagebox.showerror('error', 'can not make packages')
 
+
 def select_base_path():
     base_path = filedialog.askdirectory(title='select the root package')
     if base_path:
         package_name = simpledialog.askstring('package name', 'write the package\'s name : \t\t\t')
         if package_name:
-            clazz_name = simpledialog.askstring('class word', 'The name of the class must follow PascalCase rules : \t\t\t')
+            clazz_name = simpledialog.askstring('class word',
+                                                'The name of the class must follow PascalCase rules : \t\t\t')
             create_package(base_path, package_name, clazz_name)
+
 
 def update_git_repo_path_label():
     git_repo_path = config['PATHS'].get('git_repo_path', '')
@@ -100,6 +110,7 @@ def change_git_repo_path():
     if git_repo_path:
         git_repo_path_label.config(text=f"Git Repository: {git_repo_path}")
 
+
 def resize_image(event):
     new_width = event.width
     new_height = event.height
@@ -107,6 +118,7 @@ def resize_image(event):
     background_photo = ImageTk.PhotoImage(image)
     frame.create_image(0, 0, image=background_photo, anchor='nw')
     frame.image = background_photo  # Keep a reference to prevent garbage collection
+
 
 root = tk.Tk()
 root.title("package creator")
